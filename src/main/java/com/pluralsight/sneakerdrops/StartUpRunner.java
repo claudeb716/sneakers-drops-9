@@ -2,6 +2,7 @@ package com.pluralsight.sneakerdrops;
 
 
 
+import com.pluralsight.sneakerdrops.models.Brand;
 import com.pluralsight.sneakerdrops.models.Sneaker;
 import com.pluralsight.sneakerdrops.service.NotFoundException;
 import com.pluralsight.sneakerdrops.service.SneakerService;
@@ -81,17 +82,13 @@ public class StartUpRunner implements CommandLineRunner {
         String model = scanner.nextLine();
         for (Sneaker sneaker : sneakerService.byModel(model)) {
             System.out.println(sneaker.getModel());
-
         }
     }
     private void findByPrice(Scanner scanner){
-
-        System.out.println("Price:");
+        System.out.println(" Maximum price:");
         double price = scanner.nextDouble();
-
         for (Sneaker sneaker : sneakerService.byMaxPrice(price)) {
-            System.out.println(sneaker.getModel() + "\n Price :( " + sneaker.getPrice() +" ) ");
-
+            System.out.println(sneaker.getModel() + "\n Price :(" + sneaker.getPrice() +")");
         }
     }
     private void findByReleaseYear(Scanner scanner){
@@ -103,15 +100,13 @@ public class StartUpRunner implements CommandLineRunner {
 
         }
     }
-
     private void advancedSearch(Scanner scanner){
-        System.out.println("Max price: ");
+        System.out.println("Maximum price: ");
         double maxPrice = scanner.nextDouble();
-        System.out.println("Release on or after Year: ");
+        System.out.println("Released on or after Year: ");
         int minYear = scanner.nextInt();
-
         for (Sneaker s : sneakerService.customSearch(maxPrice, minYear)) {
-            System.out.println(s.getModel() + "|" + s.getPrice() + "|" + s.getReleaseYear());
+            System.out.println(s.getModel() + "|" + s.getPrice() + "(" + s.getReleaseYear() + ")");
         }
 
     }
@@ -120,8 +115,7 @@ public class StartUpRunner implements CommandLineRunner {
         System.out.println("Brand name: ");
         String brandName = scanner.nextLine();
         for (Sneaker sneaker : sneakerService.byBrand(brandName)) {
-            System.out.println(sneaker.getId() + "|" + sneaker.getModel() + "|"
-                    + sneaker.getPrice() + "|"  + sneaker.getReleaseYear());
+            System.out.println(sneaker.getId() + "|" + sneaker.getModel() + "|" + sneaker.getPrice() + "|"  + sneaker.getReleaseYear());
         }
     }
     private void viewById(Scanner scanner){
@@ -139,33 +133,27 @@ public class StartUpRunner implements CommandLineRunner {
         double price = scanner.nextDouble();
         System.out.println("Enter Year Released: ");
         int year = scanner.nextInt();
-
         System.out.println("Choose a Brand: ");
-        for (Sneaker sneaker : sneakerService.allBrands()) {
-            System.out.println(sneaker.getId() + ") " +  sneaker.getBrand());
+        for (Brand brand : sneakerService.allBrands()) {
+            System.out.println(brand.getId() + ") " +  brand.getName());
         }
         System.out.println("Brand ID: ");
         long brandId = scanner.nextLong();
         sneakerService.addSneaker(name,price,year,brandId);
-
         System.out.println("Sneakers Added!");
     }
     private void updatePrice(Scanner scanner){
         System.out.println("Sneaker ID: ");
         long id = scanner.nextLong();
-        System.out.print("New Price: ");
-        int updatedPrice = scanner.nextInt();
-        sneakerService.updatePrice(id,updatedPrice);
+        System.out.print("New price: ");
+        double price = scanner.nextDouble();
+        sneakerService.updatePrice(id,price);
         System.out.println("Updated!");
     }
     private void deleteSneaker(Scanner scanner) {
-        System.out.print("Sneaker id: ");
+        System.out.print("Sneaker ID: ");
         long id = scanner.nextLong();
         sneakerService.deleteSneaker(id);
+        System.out.println("Deleted");
     }
-
-
-
-
-
 }

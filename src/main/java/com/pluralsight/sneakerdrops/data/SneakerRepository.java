@@ -10,10 +10,13 @@ import java.util.List;
 public interface SneakerRepository extends JpaRepository<Sneaker, Long> {
 
     List<Sneaker>findByModelContaining(String text);
+
     List<Sneaker> findByPriceLessThan(double price);
+
     List<Sneaker>findByReleaseYear(int year);
+
     @Query("SELECT s FROM Sneaker s WHERE s.price <= :maxPrice AND s.releaseYear >= :minYear")
     List<Sneaker> search(@Param("maxPrice") double maxPrice,@Param("minYear") int minYear);
-
+    // Property traversal (go into the sneaker's brand, then match it's name)
     List<Sneaker> findByBrand_Name(String name);
 }
