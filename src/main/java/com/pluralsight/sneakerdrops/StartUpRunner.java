@@ -3,6 +3,7 @@ package com.pluralsight.sneakerdrops;
 
 
 import com.pluralsight.sneakerdrops.models.Sneaker;
+import com.pluralsight.sneakerdrops.service.NotFoundException;
 import com.pluralsight.sneakerdrops.service.SneakerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -12,7 +13,9 @@ import java.util.Scanner;
 
 @Component
 public class StartUpRunner implements CommandLineRunner {
+
     private final SneakerService sneakerService;
+
     @Autowired
     public StartUpRunner(SneakerService sneakerService) {
         this.sneakerService = sneakerService;
@@ -25,7 +28,29 @@ public class StartUpRunner implements CommandLineRunner {
         boolean running = true;
 
         while (running) {
-                System.out.println("""
+            printMenu();
+            try {
+                switch(userScanner.nextInt()){
+                    case 1 -> listSneakers();
+                    case 2 -> findByReleaseYear(userScanner);
+                    case 3 -> findByModel(userScanner);
+                    case 4 -> findByPrice(userScanner);
+                    case 5 -> advancedSearch(userScanner);
+                    case 6 -> viewById(userScanner);
+                    case 7 -> addSneaker(userScanner);
+                    case 8 -> updatePrice(userScanner);
+                    case 9 -> deleteSneaker(userScanner);
+                    case 10 -> listByBrand(userScanner);
+                    case 0 -> running = false;
+                    default -> System.out.println("Unknown option");
+                }
+            } catch (NotFoundException e) {
+                System.out.println(e.getMessage());
+            }
+        }
+    }
+    private void printMenu(){
+        System.out.println("""
                         === Sneaker Library ===
                         1) List all Sneakers
                         2) Find by Year
@@ -41,33 +66,21 @@ public class StartUpRunner implements CommandLineRunner {
                         0) Quit
                         =======================
                 """);
-
-            switch(userScanner.nextInt()){
-                case 1 -> listSneakers();
-                case 2 -> findByReleaseYear(userScanner);
-                case 3 -> findByModel(userScanner);
-                case 4 -> findByPrice(userScanner);
-                case 5 -> advancedSearch(userScanner);
-                case 6 -> viewById(userScanner);
-                case 7 -> addSneaker(userScanner);
-                case 8 -> updatePrice(userScanner);
-                case 9 -> deleteSneaker(userScanner);
-                case 10 -> listByBrand(userScanner);
-                case 11 -> addBrand(userScanner);
-                case 0 -> running = false;
-                default -> System.out.println("Unknown option");
-            }
+        System.out.println("Choose:");
+    }
+    private void listSneakers() {
+        System.out.println(" You have " + sneakerService.count() + "Sneakers");
+        for (Sneaker s : sneakerService.allSneakers()) {
+            System.out.println(s.getId() + "|"  + s.getModel() +  "|" + s.getReleaseYear() +  "|" + s.getBrand().getName() + "(" + s.getPrice() + ")" );
 
         }
-
     }
     private void findByModel(Scanner scanner){
         scanner.nextLine();
         System.out.println("model:");
         String model = scanner.nextLine();
-
         for (Sneaker sneaker : sneakerService.byModel(model)) {
-            System.out.println("\n model : " + sneaker.getModel());
+            System.out.println(sneaker.getModel());
 
         }
     }
@@ -86,17 +99,11 @@ public class StartUpRunner implements CommandLineRunner {
         int year = scanner.nextInt();
 
         for (Sneaker sneaker : sneakerService.byYear(year)) {
-            System.out.println(sneaker.getModel() + "\n Release Year :( " + sneaker.getReleaseYear() +" ) ");
+            System.out.println(sneaker.getModel() + "\n Release Year :(" + sneaker.getReleaseYear() +")");
 
         }
     }
-    private void listSneakers() {
-        System.out.println(" You have " + sneakerService.count() + "Sneakers");
-        for (Sneaker s : sneakerService.allSneakers()) {
-            System.out.println(s.getBrand() + " - "  + s.getModel() +  " _ " + s.getReleaseYear() +  " - " + s.getPrice());
 
-        }
-    }
     private void advancedSearch(Scanner scanner){
         System.out.println("Max price: ");
         double maxPrice = scanner.nextDouble();
@@ -156,14 +163,7 @@ public class StartUpRunner implements CommandLineRunner {
         long id = scanner.nextLong();
         sneakerService.deleteSneaker(id);
     }
-    private void addBrand(Scanner scanner){
-        scanner.nextLine();
-        System.out.println("Enter Brand Name: ");
-        String brandName = scanner.nextLine();
-        //sneakerService.save(new Sneaker().setBrand(brandName););
-        System.out.println(brandName + " Was Added!");
 
-    }
 
 
 
